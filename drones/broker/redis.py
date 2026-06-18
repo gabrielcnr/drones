@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+import contextlib
 import logging
 import threading
-import time
-from typing import Callable
+from collections.abc import Callable
 
 import redis
 
-from drone.broker import DroneBroker
+from drones.broker import DroneBroker
 
 logger = logging.getLogger(__name__)
 
@@ -40,17 +40,13 @@ class RedisBroker(DroneBroker):
             self._listener_thread.join(timeout=5.0)
             self._listener_thread = None
         if self._pubsub is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self._pubsub.unsubscribe()
                 self._pubsub.close()
-            except Exception:
-                pass
             self._pubsub = None
         if self._client is not None:
-            try:
+            with contextlib.suppress(Exception):
                 self._client.close()
-            except Exception:
-                pass
             self._client = None
         self._callbacks.clear()
         logger.info("Disconnected from Redis")

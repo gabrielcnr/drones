@@ -20,7 +20,7 @@ An abstracted message transport. The first implementation is Redis Pub/Sub. The 
 ### Entry Point
 
 ```python
-from drone import Drone, RedisBroker
+from drones import Drone, RedisBroker
 
 broker = RedisBroker("redis://localhost:6379")
 Drone.bind(pubsub_channel="my-app-channel", broker=broker)
@@ -32,7 +32,7 @@ This configures the global Drone environment. The `pubsub_channel` is the single
 
 ```python
 from atom.api import Atom, Int, Float, observe
-from drone import drone
+from drones import drone
 
 @drone
 class MarketFeed(Atom):
@@ -280,7 +280,7 @@ Drone.unbind()  # unsubscribes, disconnects broker, clears registry
 ## Package Structure
 
 ```
-drone/
+drones/
 ├── __init__.py          # public API: Drone, drone, DroneBroker, DroneSerializer
 ├── core.py              # Drone singleton, registry, message dispatch
 ├── decorator.py         # @drone decorator implementation

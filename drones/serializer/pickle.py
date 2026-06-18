@@ -3,7 +3,7 @@ from __future__ import annotations
 import pickle
 from typing import Any
 
-from drone.serializer import DroneSerializer
+from drones.serializer import DroneSerializer
 
 
 class PickleSerializer(DroneSerializer):

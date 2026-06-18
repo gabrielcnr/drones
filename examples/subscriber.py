@@ -12,7 +12,7 @@ import time
 
 from atom.api import Atom, Float, Int, Str, observe
 
-from drone import Drone, RedisBroker, drone
+from drones import Drone, RedisBroker, drone
 
 
 @drone
@@ -33,11 +33,7 @@ class Portfolio(Atom):
         self.total = self.price * self.quantity
         # Simple risk: higher price -> higher risk score
         self.risk = round(self.total / 10000, 4)
-        print(
-            f"  price={self.price:<10.2f} "
-            f"total={self.total:<12.2f} "
-            f"risk={self.risk:<8.4f}"
-        )
+        print(f"  price={self.price:<10.2f} total={self.total:<12.2f} risk={self.risk:<8.4f}")
 
     @observe("volume")
     def _on_volume(self, change):
@@ -53,7 +49,7 @@ def main():
     print("📊 Portfolio subscriber started (Ctrl+C to stop)")
     print(f"   Name: {portfolio.name}")
     print(f"   Quantity: {portfolio.quantity}")
-    print(f"   Channel: drone-example")
+    print("   Channel: drone-example")
     print()
 
     try:
