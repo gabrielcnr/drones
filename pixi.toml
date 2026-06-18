@@ -1,6 +1,5 @@
 [workspace]
 name = "drone"
-version = "0.1.0"
 description = "Distributed Reactive Orchestration Nodes Environment"
 channels = ["conda-forge"]
 platforms = ["osx-arm64", "osx-64", "linux-64"]
@@ -9,16 +8,21 @@ platforms = ["osx-arm64", "osx-64", "linux-64"]
 python = ">=3.13"
 
 [pypi-dependencies]
-drone = { path = ".", editable = true }
+drones = { path = ".", editable = true }
 
 [feature.dev.pypi-dependencies]
 pytest = ">=8.0"
 pytest-timeout = ">=2.0"
+ruff = ">=0.6"
+mypy = ">=1.10"
 
 [environments]
 default = { features = ["dev"], solve-group = "default" }
 
 [tasks]
 test = "pytest tests/ -v"
+lint = "ruff check ."
+format = "ruff format ."
+typecheck = "mypy"
 publisher = "python examples/publisher.py"
 subscriber = "python examples/subscriber.py"

@@ -5,7 +5,7 @@ from typing import Any
 
 from atom.api import Atom
 
-from drone.core import Drone
+from drones.core import Drone
 
 logger = logging.getLogger(__name__)
 
@@ -62,8 +62,8 @@ def drone(cls: type[Atom]) -> type[Atom]:
         _install_publisher(cls, member_name, node_name)
 
     # Store subscription info on the class
-    cls._drone_subscribe_members = subscribe_members
-    cls._drone_publish_members = publish_members
+    cls._drone_subscribe_members = subscribe_members  # type: ignore[attr-defined]
+    cls._drone_publish_members = publish_members  # type: ignore[attr-defined]
 
     # Wrap __init__ to register instances
     original_init = cls.__init__
@@ -78,7 +78,7 @@ def drone(cls: type[Atom]) -> type[Atom]:
             else:
                 Drone.register_subscriber(node_name, member_name, self)
 
-    cls.__init__ = __init__
+    cls.__init__ = __init__  # type: ignore[method-assign]
 
     return cls
 
@@ -86,15 +86,12 @@ def drone(cls: type[Atom]) -> type[Atom]:
 def _install_publisher(cls: type[Atom], member_name: str, node_name: str) -> None:
     member = cls.members()[member_name]
 
-    def _publish_observer(change: dict) -> None:
+    def _publish_observer(change: dict[str, Any]) -> None:
         instance = change["object"]
         value = change["value"]
         drone_id = _drone_ids.get(id(instance))
         is_scoped = member.metadata and member.metadata.get("drone_scope") == "instance"
-        if is_scoped and drone_id:
-            effective_node = f"{node_name}.{drone_id}"
-        else:
-            effective_node = node_name
+        effective_node = f"{node_name}.{drone_id}" if is_scoped and drone_id else node_name
         Drone.publish_value(effective_node, value)
 
-    member.add_static_observer(_publish_observer)
+    member.add_static_observer(_publish_observer)  # type: ignore[arg-type]

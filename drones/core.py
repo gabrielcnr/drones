@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import atexit
+import contextlib
 import logging
 import threading
 import uuid
@@ -8,10 +9,10 @@ import weakref
 from dataclasses import dataclass, field
 from typing import Any
 
-from drone.broker import DroneBroker
-from drone.envelope import DroneEnvelope
-from drone.serializer import DroneSerializer
-from drone.serializer.pickle import PickleSerializer
+from drones.broker import DroneBroker
+from drones.envelope import DroneEnvelope
+from drones.serializer import DroneSerializer
+from drones.serializer.pickle import PickleSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -74,10 +75,8 @@ class _DroneEnvironment:
             self._subscriptions.clear()
         self.pubsub_channel = None
         self.broker = None
-        try:
+        with contextlib.suppress(Exception):
             atexit.unregister(self.unbind)
-        except Exception:
-            pass
         logger.info("Drone unbound")
 
     def _next_seq(self) -> int:
@@ -86,7 +85,7 @@ class _DroneEnvironment:
             return self._seq
 
     def publish_value(self, node: str, value: Any) -> None:
-        if not self._bound:
+        if not self._bound or self.broker is None or self.pubsub_channel is None:
             logger.warning("Drone is not bound; skipping publish for node '%s'", node)
             return
         envelope = DroneEnvelope(
@@ -111,7 +110,9 @@ class _DroneEnvironment:
     ) -> None:
         ref = weakref.ref(instance, lambda r: self._cleanup_ref(node, r, drone_id))
         with self._sub_lock:
-            entry = self._subscriptions.setdefault(node, _SubscriptionEntry(member_name=member_name))
+            entry = self._subscriptions.setdefault(
+                node, _SubscriptionEntry(member_name=member_name)
+            )
             if drone_id is None:
                 entry.broadcast_refs.append(ref)
             else:
@@ -139,16 +140,12 @@ class _DroneEnvironment:
             if entry is None:
                 return
             if drone_id is None:
-                try:
+                with contextlib.suppress(ValueError):
                     entry.broadcast_refs.remove(ref)
-                except ValueError:
-                    pass
             else:
                 refs = entry.scoped_refs.get(drone_id, [])
-                try:
+                with contextlib.suppress(ValueError):
                     refs.remove(ref)
-                except ValueError:
-                    pass
                 if not refs:
                     entry.scoped_refs.pop(drone_id, None)
 
@@ -207,7 +204,13 @@ class _DroneEnvironment:
 _env = _DroneEnvironment()
 
 
-class Drone:
+class _DroneMeta(type):
+    @property
+    def stats(cls) -> dict[str, Any]:
+        return _env.stats
+
+
+class Drone(metaclass=_DroneMeta):
     @staticmethod
     def bind(
         pubsub_channel: str,
@@ -236,11 +239,6 @@ class Drone:
     @staticmethod
     def unregister_subscriber(instance: Any) -> None:
         _env.unregister_subscriber(instance)
-
-    @staticmethod
-    @property
-    def stats() -> dict[str, Any]:
-        return _env.stats
 
     @staticmethod
     def is_bound() -> bool:

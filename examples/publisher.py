@@ -12,7 +12,7 @@ import time
 
 from atom.api import Atom, Float, Str
 
-from drone import Drone, RedisBroker, drone
+from drones import Drone, RedisBroker, drone
 
 
 @drone
@@ -31,7 +31,7 @@ def main():
 
     print("📡 MarketFeed publisher started (Ctrl+C to stop)")
     print(f"   Symbol: {feed.symbol}")
-    print(f"   Channel: drone-example")
+    print("   Channel: drone-example")
     print()
 
     try:

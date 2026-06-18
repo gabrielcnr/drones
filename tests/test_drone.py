@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 from atom.api import Atom, Float, Int, observe
 
-from drone import Drone, DroneEnvelope, PickleSerializer, drone
+from drones import Drone, DroneEnvelope, PickleSerializer, drone
 from tests.fake_broker import FakeBroker
 
 
