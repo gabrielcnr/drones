@@ -2,7 +2,7 @@
 
 **Distributed Reactive Orchestration Nodes Environment**
 
-[![build](https://github.com/gabrielcnr/drone/actions/workflows/main.yml/badge.svg)](https://github.com/gabrielcnr/drone/actions/workflows/main.yml)
+[![build](https://github.com/gabrielcnr/drones/actions/workflows/main.yml/badge.svg)](https://github.com/gabrielcnr/drones/actions/workflows/main.yml)
 [![PyPI](https://img.shields.io/pypi/v/drones.svg)](https://pypi.org/project/drones/)
 [![Python](https://img.shields.io/pypi/pyversions/drones.svg)](https://pypi.org/project/drones/)
 

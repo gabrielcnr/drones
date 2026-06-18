@@ -35,9 +35,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/gabrielcnr/drone"
-Repository = "https://github.com/gabrielcnr/drone"
-Issues = "https://github.com/gabrielcnr/drone/issues"
+Homepage = "https://github.com/gabrielcnr/drones"
+Repository = "https://github.com/gabrielcnr/drones"
+Issues = "https://github.com/gabrielcnr/drones/issues"
 
 [tool.hatch.version]
 source = "vcs"
